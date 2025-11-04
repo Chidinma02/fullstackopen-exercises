@@ -4,6 +4,7 @@ const app = express()
 
 app.use(express.json()) // Parse JSON bodies
 
+app.use(express.static('dist'))
 // 3.8: Create custom token to log POST body
 morgan.token('body', (req) => {
   return req.method === 'POST' ? JSON.stringify(req.body) : ''
