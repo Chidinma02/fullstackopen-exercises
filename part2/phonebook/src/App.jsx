@@ -14,7 +14,9 @@ const App = () => {
   const [messageType, setMessageType] = useState('success')
 
   useEffect(() => {
-    personService.getAll().then(initialPersons => setPersons(initialPersons))
+    personService.getAll().then(initialPersons => setPersons(initialPersons)).catch(err => {
+    console.error('Failed to fetch persons:', err);
+  });
   }, [])
 
   const addPerson = (event) => {
