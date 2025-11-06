@@ -1,4 +1,19 @@
 const mongoose = require('mongoose')
+require('dotenv').config()
+
+mongoose.set('strictQuery', false)
+
+const url = process.env.MONGODB_URI
+
+console.log('connecting to', url)
+
+mongoose.connect(url)
+  .then(() => {
+    console.log('✅ Connected to MongoDB')
+  })
+  .catch((error) => {
+    console.error(' Error connecting to MongoDB:', error.message)
+  })
 
 const phoneRegex = /^\d{2,3}-\d+$/
 
