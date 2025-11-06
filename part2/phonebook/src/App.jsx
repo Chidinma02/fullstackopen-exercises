@@ -14,12 +14,10 @@ const App = () => {
   const [messageType, setMessageType] = useState('success')
 
   useEffect(() => {
-    personService.getAll().then(initialPersons => setPersons(initialPersons)).catch(err => {
-    console.error('Failed to fetch persons:', err);
-  });
+    personService.getAll().then(initialPersons => setPersons(initialPersons))
   }, [])
 
-  const addPerson = (event) => {
+  const addPerson = async (event) => {
     event.preventDefault()
     const existingPerson = persons.find(p => p.name === newName)
 
@@ -36,36 +34,48 @@ const App = () => {
             setNewNumber('')
           })
           .catch(error => {
-
-            if(error.response && error.response.data && error.response.data.error){
-               setMessage(error.response.data.error)
-            }else{
-              setMessage(`Information of ${newName} has already been removed from the server`)
-            }
+            setMessage(`Information of ${newName} has already been removed from the server`)
             setMessageType('error')
-          setTimeout(() => setMessage(null), 5000)
-          setPersons(persons.filter(p => p.id !== existingPerson.id))
-        })
-            
+            setPersons(persons.filter(p => p.id !== existingPerson.id))
+            setTimeout(() => setMessage(null), 5000)
+          })
       }
       return
     }
 
     const personObject = { name: newName, number: newNumber }
-    personService.create(personObject)
-      .then(returnedPerson => {
-        setPersons(persons.concat(returnedPerson))
-        setMessage(`Added ${newName} successfully`)
-        setMessageType('success')
-        setTimeout(() => setMessage(null), 5000)
-        setNewName('')
-        setNewNumber('')
-      })
-      .catch(error => {
-        setMessage(`Failed to add ${newName}`)
-        setMessageType('error')
-        setTimeout(() => setMessage(null), 5000)
-      })
+    // personService.create(personObject)
+    //   .then(returnedPerson => {
+    //     setPersons(persons.concat(returnedPerson))
+    //     setMessage(`Added ${newName} successfully`)
+    //     setMessageType('success')
+    //     setTimeout(() => setMessage(null), 5000)
+    //     setNewName('')
+    //     setNewNumber('')
+    //   })
+    //   .catch(error => {
+    //     setMessage(`Failed to add ${newName}`)
+    //     setMessageType('error')
+    //     setTimeout(() => setMessage(null), 5000)
+    //   })
+
+    try {
+    const returnedPerson = await personService.create(personObject);
+    setPersons(persons.concat(returnedPerson));
+    setMessage(`Added ${newName} successfully`);
+    setMessageType('success');
+    setNewName('');
+    setNewNumber('');
+  } catch (error) {
+    // Only show the backend error message (e.g. Mongoose validation)
+    if (error.response?.data?.error) {
+      setMessage(error.response.data.error);
+    }
+    setMessageType('error');
+  }
+
+  setTimeout(() => setMessage(null), 5000);
+
   }
 
   const handleDelete = (id, name) => {
