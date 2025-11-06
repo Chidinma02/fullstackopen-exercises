@@ -36,11 +36,17 @@ const App = () => {
             setNewNumber('')
           })
           .catch(error => {
-            setMessage(`Information of ${newName} has already been removed from the server`)
+
+            if(error.response && error.response.data && error.response.data.error){
+               setMessage(error.response.data.error)
+            }else{
+              setMessage(`Information of ${newName} has already been removed from the server`)
+            }
             setMessageType('error')
-            setPersons(persons.filter(p => p.id !== existingPerson.id))
-            setTimeout(() => setMessage(null), 5000)
-          })
+          setTimeout(() => setMessage(null), 5000)
+          setPersons(persons.filter(p => p.id !== existingPerson.id))
+        })
+            
       }
       return
     }
