@@ -1,3 +1,4 @@
+const config = require('./utils/config')
 const express = require('express')
 const app = express()
 require('express-async-errors')
@@ -7,9 +8,8 @@ const usersRouter = require('./controllers/users')
 const loginRouter = require('./controllers/login')
 const blogsRouter = require('./controllers/blogs')
 const middleware = require('./utils/middleware')
-require('dotenv').config()
 
-mongoose.connect(process.env.MONGODB_URI)
+mongoose.connect(config.MONGODB_URI)
 
 app.use(cors())
 app.use(express.json())

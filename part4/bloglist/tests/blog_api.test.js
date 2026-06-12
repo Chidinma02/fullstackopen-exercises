@@ -124,8 +124,8 @@ test('a blog can be deleted', async () => {
     .expect(204)
 
   const blogsAtEnd = await api.get('/api/blogs')
-  expect(blogsAtEnd.body).toHaveLength(blogsAtStart.body.length - 1)
-  expect(blogsAtEnd.body.map(b => b.id)).not.toContain(blogToDelete.id)
+  assert.strictEqual(blogsAtEnd.body.length, blogsAtStart.body.length - 1)
+  assert(!blogsAtEnd.body.map(b => b.id).includes(blogToDelete.id))
 })
 
 // UPDATE a blog
@@ -141,7 +141,7 @@ test('a blog can be updated', async () => {
     .expect(200)
     .expect('Content-Type', /application\/json/)
 
-  expect(response.body.likes).toBe(blogToUpdate.likes + 1)
+  assert.strictEqual(response.body.likes, blogToUpdate.likes + 1)
 })
 
 after(async () => {
