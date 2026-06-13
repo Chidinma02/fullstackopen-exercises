@@ -1,0 +1,12 @@
+{
+  "name": "bloglist-e2e",
+  "version": "1.0.0",
+  "description": "E2E tests using Playwright for Blog list application",
+  "main": "index.js",
+  "scripts": {
+    "test": "playwright test"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.49.0"
+  }
+}

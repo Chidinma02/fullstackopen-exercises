@@ -16,7 +16,7 @@ const tokenExtractor = (request, response, next) => {
 const userExtractor = async (request, response, next) => {
   if (request.token) {
     try {
-      const decodedToken = jwt.verify(request.token, process.env.SECRET)
+      const decodedToken = jwt.verify(request.token, process.env.SECRET || 'fallback_secret_123')
       if (!decodedToken.id) {
         return response.status(401).json({ error: 'token invalid' })
       }
