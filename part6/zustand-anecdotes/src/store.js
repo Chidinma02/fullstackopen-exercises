@@ -1,42 +1,58 @@
-
 import { create } from 'zustand'
 
-const anecdotesAtStart = [
-  'If it hurts, do it more often',
-  'Adding manpower to a late software project makes it later!',
-  'The first 90 percent of the code accounts for the first 90 percent of the development time...The remaining 10 percent of the code accounts for the other 90 percent of the development time.',
-  'Any fool can write code that a computer can understand. Good programmers write code that humans can understand.',
-  'Premature optimization is the root of all evil.',
-  'Debugging is twice as hard as writing the code in the first place. Therefore, if you write the code as cleverly as possible, you are, by definition, not smart enough to debug it.'
-]
-
-const getId = () => (100000 * Math.random()).toFixed(0)
-
-const asObject = anecdote => ({
-  content: anecdote,
-  id: getId(),
-  votes: 0
-})
 
 const useAnecdoteStore = create((set) => ({
-  anecdotes: anecdotesAtStart.map(asObject),
+  anecdotes: [],
+  filter: '',
   actions: {
-    vote: (id) =>
+    initializeAnecdotes: async () => {
+      const response = await fetch('http://localhost:3001/anecdotes')
+      const anecdotes = await response.json()
+      set({ anecdotes })
+    },
+    vote: async (id) => {
+      const state = useAnecdoteStore.getState()
+      const anecdoteToVote = state.anecdotes.find((a) => a.id === id)
+      if (anecdoteToVote) {
+        const updatedVotes = anecdoteToVote.votes + 1
+        const response = await fetch(`http://localhost:3001/anecdotes/${id}`, {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ votes: updatedVotes }),
+        })
+        const updatedAnecdote = await response.json()
+        set((state) => ({
+          anecdotes: state.anecdotes.map((a) =>
+            a.id === id ? updatedAnecdote : a
+          ),
+        }))
+      }
+    },
+    createAnecdote: async (content) => {
+      const newAnecdote = { content, votes: 0 }
+      const response = await fetch('http://localhost:3001/anecdotes', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(newAnecdote),
+      })
+      const created = await response.json()
       set((state) => ({
-        anecdotes: state.anecdotes.map((a) =>
-          a.id === id ? { ...a, votes: a.votes + 1 } : a
-        ),
-      })),
-    createAnecdote: (content) =>
+        anecdotes: state.anecdotes.concat(created),
+      }))
+    },
+    deleteAnecdote: async (id) => {
+      await fetch(`http://localhost:3001/anecdotes/${id}`, {
+        method: 'DELETE',
+      })
       set((state) => ({
-        anecdotes: state.anecdotes.concat({
-          content,
-          id: getId(),
-          votes: 0,
-        }),
-      })),
+        anecdotes: state.anecdotes.filter((a) => a.id !== id),
+      }))
+    },
+    setFilter: (filter) => set({ filter }),
   },
 }))
 
 export const useAnecdotes = () => useAnecdoteStore((state) => state.anecdotes)
+export const useFilter = () => useAnecdoteStore((state) => state.filter)
 export const useAnecdoteActions = () => useAnecdoteStore((state) => state.actions)
+export default useAnecdoteStore
