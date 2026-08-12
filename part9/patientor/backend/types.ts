@@ -4,11 +4,13 @@ export interface Diagnosis {
   latin?: string;
 }
 
-export enum Gender {
-  Male = "male",
-  Female = "female",
-  Other = "other"
-}
+export const Gender = {
+  Male: 'male',
+  Female: 'female',
+  Other: 'other'
+} as const;
+
+export type Gender = typeof Gender[keyof typeof Gender];
 
 export enum HealthCheckRating {
   "Healthy" = 0,
@@ -55,14 +57,18 @@ export type Entry =
 export interface Patient {
   id: string;
   name: string;
+  ssn: string;
   occupation: string;
   gender: Gender;
-  ssn?: string;
-  dateOfBirth?: string;
+  dateOfBirth: string;
   entries: Entry[];
 }
 
-export type PatientFormValues = Omit<Patient, "id" | "entries">;
+export type NonSensitivePatient = Omit<Patient, 'ssn' | 'entries'>;
 
-type UnionOmit<T, K extends string | number | symbol> = T extends unknown ? Omit<T, K> : never;
+export type NewPatient = Omit<Patient, 'id' | 'entries'>;
+
+export type UnionOmit<T, K extends string | number | symbol> = T extends unknown ? Omit<T, K> : never;
+
 export type NewEntry = UnionOmit<Entry, 'id'>;
+

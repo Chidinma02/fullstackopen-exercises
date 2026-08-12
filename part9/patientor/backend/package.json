@@ -1,0 +1,30 @@
+{
+  "name": "patientor-backend",
+  "version": "1.0.0",
+  "description": "Patientor backend",
+  "type": "module",
+  "main": "index.ts",
+  "scripts": {
+    "start": "tsx index.ts",
+    "dev": "tsx watch index.ts",
+    "lint": "eslint ."
+  },
+  "dependencies": {
+    "cors": "^2.8.5",
+    "express": "^5.2.1",
+    "uuid": "^14.0.1",
+    "zod": "^4.4.3"
+  },
+  "devDependencies": {
+    "@eslint/js": "^10.0.1",
+    "@stylistic/eslint-plugin": "^5.10.0",
+    "@types/cors": "^2.8.19",
+    "@types/express": "^5.0.6",
+    "@types/node": "^26.1.1",
+    "@types/uuid": "^10.0.0",
+    "eslint": "^10.7.0",
+    "tsx": "^4.23.1",
+    "typescript": "^6.0.2",
+    "typescript-eslint": "^8.64.0"
+  }
+}
