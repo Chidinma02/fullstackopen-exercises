@@ -2,7 +2,7 @@ name: Hello World Workflow
 
 on:
   push:
-    branches: [main, master]
+    branches: [ main, master ]
   workflow_dispatch:
 
 jobs:
@@ -11,3 +11,9 @@ jobs:
     steps:
       - name: Print Hello World
         run: echo "Hello World!"
+
+      - name: Print current date
+        run: date
+
+      - name: Print directory contents
+        run: ls -l
