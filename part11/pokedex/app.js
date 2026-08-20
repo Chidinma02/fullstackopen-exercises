@@ -1,14 +1,10 @@
 const express = require('express')
 const app = express()
 
-// get the port from env variable
-const PORT = process.env.PORT || 5001
+const PORT = process.env.PORT || 5000
 
 app.use(express.static('dist'))
 
-const start = async () => {
-  await app.listen(PORT)
-  console.log(`server started on port ${PORT}`)
-}
-
-start()
+app.listen(PORT, '0.0.0.0', () => {
+  console.log(`Server started on port ${PORT}`)
+})
