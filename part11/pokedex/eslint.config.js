@@ -9,6 +9,7 @@ module.exports = [
       'webpack.config.js',
       'eslint.config.js',
       '.eslintrc.js',
+      'jest.setup.js',
       'node_modules/**',
       'dist/**'
     ]
