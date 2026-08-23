@@ -14,6 +14,8 @@ jobs:
     defaults:
       run:
         working-directory: part11/pokedex
+    env:
+      RENDER_DEPLOY_HOOK_URL: ${{ secrets.RENDER_DEPLOY_HOOK_URL }}
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -28,8 +30,10 @@ jobs:
       - name: Test
         run: npm test
       - name: Trigger deployment
-        if: ${{ github.event_name == 'push' }}
+        if: github.event_name == 'push' && env.RENDER_DEPLOY_HOOK_URL != ''
         run: curl -s "$RENDER_DEPLOY_HOOK_URL"
-        env:
-          RENDER_DEPLOY_HOOK_URL: ${{ secrets.RENDER_DEPLOY_HOOK_URL }}
+      - name: Health check
+        if: github.event_name == 'push' && env.RENDER_DEPLOY_HOOK_URL != ''
+        run: curl -fsS --retry 5 --retry-delay 5 https://fullstackopen-exercises-2-tu7d.onrender.com/health
+
 
