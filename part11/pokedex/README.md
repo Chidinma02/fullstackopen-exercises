@@ -11,3 +11,7 @@ Start by running `npm install` inside the project folder
 `npm run eslint` to run eslint
 `npm run build` to make a production build
 `npm run start-prod` to run your production build
+
+## Deployed Application
+The application is deployed on Render and can be accessed at: https://fullstackopen-exercises-2-tu7d.onrender.com/
+
