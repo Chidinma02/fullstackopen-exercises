@@ -4,9 +4,9 @@ on:
   push:
     branches:
       - main
-      - master
   pull_request:
-    branches: [main, master]
+    branches:
+      - main
     types: [opened, synchronize]
 jobs:
   simple_deployment_pipeline:
@@ -30,10 +30,10 @@ jobs:
       - name: Test
         run: npm test
       - name: Trigger deployment
-        if: github.event_name == 'push' && env.RENDER_DEPLOY_HOOK_URL != ''
+        if: ${{ github.event_name == 'push' && env.RENDER_DEPLOY_HOOK_URL != '' }}
         run: curl -s "$RENDER_DEPLOY_HOOK_URL"
       - name: Health check
-        if: github.event_name == 'push' && env.RENDER_DEPLOY_HOOK_URL != ''
+        if: ${{ github.event_name == 'push' && env.RENDER_DEPLOY_HOOK_URL != '' }}
         run: curl -fsS --retry 5 --retry-delay 5 https://fullstackopen-exercises-2-tu7d.onrender.com/health
 
 
