@@ -35,6 +35,26 @@ jobs:
       - name: Health check
         if: github.event_name == 'push' && !contains(join(github.event.commits.*.message, ' '), '#skip')
         run: curl -fsS --retry 5 --retry-delay 5 https://fullstackopen-exercises-2-tu7d.onrender.com/health
+      - name: Discord Success Notification
+        if: success() && github.event_name == 'push' && !contains(join(github.event.commits.*.message, ' '), '#skip')
+        uses: sarisia/actions-status-discord@v1
+        with:
+          webhook: ${{ secrets.DISCORD_WEBHOOK }}
+          status: ${{ job.status }}
+          content: "A new version of Pokedex deployed!"
+          title: "Deployment Succeeded"
+          description: "Commit [${{ github.sha }}](https://github.com/${{ github.repository }}/commit/${{ github.sha }}) by ${{ github.actor }} was successfully deployed to Render."
+      - name: Discord Failure Notification
+        if: failure()
+        uses: sarisia/actions-status-discord@v1
+        with:
+          webhook: ${{ secrets.DISCORD_WEBHOOK }}
+          status: ${{ job.status }}
+          content: "Build failed!"
+          title: "Build Failed"
+          description: "Commit [${{ github.sha }}](https://github.com/${{ github.repository }}/commit/${{ github.sha }}) by ${{ github.actor }} failed the build."
+
+  
 
   tag_release:
     needs: [simple_deployment_pipeline]
@@ -47,7 +67,7 @@ jobs:
       - name: Bump version and push tag
         uses: anothrNick/github-tag-action@1.75.0
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN:  ${{ secrets.GITHUB_TOKEN }}
           DEFAULT_BUMP: patch
 
 
