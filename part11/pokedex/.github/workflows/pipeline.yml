@@ -30,10 +30,24 @@ jobs:
       - name: Test
         run: npm test
       - name: Trigger deployment
-        if: ${{ github.event_name == 'push' }}
+        if: github.event_name == 'push' && !contains(join(github.event.commits.*.message, ' '), '#skip')
         run: curl -s "$RENDER_DEPLOY_HOOK_URL"
       - name: Health check
-        if: ${{ github.event_name == 'push' }}
+        if: github.event_name == 'push' && !contains(join(github.event.commits.*.message, ' '), '#skip')
         run: curl -fsS --retry 5 --retry-delay 5 https://fullstackopen-exercises-2-tu7d.onrender.com/health
+
+  tag_release:
+    needs: [simple_deployment_pipeline]
+    runs-on: ubuntu-latest
+    if: github.event_name == 'push' && !contains(join(github.event.commits.*.message, ' '), '#skip')
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: '0'
+      - name: Bump version and push tag
+        uses: anothrNick/github-tag-action@1.75.0
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          DEFAULT_BUMP: patch
 
 
