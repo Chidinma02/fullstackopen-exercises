@@ -1,3 +1,11 @@
+# Full Stack Open Exercises
+
+## Part 11 Submission Links
+* **Deployed Pokedex App**: [https://fullstackopen-exercises-2-tu7d.onrender.com/](https://fullstackopen-exercises-2-tu7d.onrender.com/)
+* **Phonebook CI/CD Repository (Exercise 11.20 - 11.22)**: [https://github.com/Chidinma02/phone-book](https://github.com/Chidinma02/phone-book)
+
+---
+
 # Rate Repository Application
 
 A mobile application for rating GitHub repositories, built with React Native, Expo, Apollo Client, and Formik as part of the Full Stack Open course (Part 10).

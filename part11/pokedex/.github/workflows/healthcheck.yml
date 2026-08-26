@@ -1,0 +1,17 @@
+name: Periodic health check
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '*/15 * * * *'
+
+jobs:
+  periodic_health_check:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check the deployed service URL
+        uses: jtalk/url-health-check@v3
+        with:
+          url: https://fullstackopen-exercises-2-tu7d.onrender.com/health
+          max-attempts: 3
+          retry-delay: 5s
