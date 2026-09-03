@@ -1,0 +1,54 @@
+root@436cc1ac441f:/# apt-get update
+Hit:1 http://ports.ubuntu.com/ubuntu-ports noble InRelease
+Hit:2 http://ports.ubuntu.com/ubuntu-ports noble-updates InRelease
+Hit:3 http://ports.ubuntu.com/ubuntu-ports noble-backports InRelease
+Hit:4 http://ports.ubuntu.com/ubuntu-ports noble-security InRelease
+Reading package lists... Done
+
+root@436cc1ac441f:/# apt-get install -y curl
+Reading package lists... Done
+Building dependency tree... Done
+Reading state information... Done
+The following NEW packages will be installed:
+  ca-certificates curl libcurl4t64 openssl
+0 upgraded, 4 newly installed, 0 to remove and 0 not upgraded.
+Need to get 3,416 kB of archives.
+After this operation, 8,912 kB of additional disk space will be used.
+Fetched 3,416 kB in 1s (3,880 kB/s)
+Setting up ca-certificates ...
+Setting up libcurl4t64:arm64 ...
+Setting up curl ...
+
+root@436cc1ac441f:/# curl -sL https://deb.nodesource.com/setup_24.x | bash
+
+================================================================================
+▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓
+================================================================================
+
+                         NodeSource Node.js Installer                         
+
+================================================================================
+                                    Informations                                
+================================================================================
+
+- Node.js Version: 24.x
+- Operating System: Ubuntu noble
+- Architecture: arm64
+
+Repository configured successfully.
+To install Node.js, run: apt install nodejs -y
+
+root@436cc1ac441f:/# apt install -y nodejs
+Reading package lists... Done
+Building dependency tree... Done
+Reading state information... Done
+The following NEW packages will be installed:
+  nodejs
+0 upgraded, 1 newly installed, 0 to remove and 0 not upgraded.
+Need to get 38.2 MB of archives.
+After this operation, 269 MB of additional disk space will be used.
+Fetched 38.2 MB in 2s (19.1 MB/s)
+Setting up nodejs (24.20.0-1nodesource1) ...
+
+root@436cc1ac441f:/# node /usr/src/app/index.js
+Hello World
