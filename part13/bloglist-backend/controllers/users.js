@@ -1,0 +1,66 @@
+const router = require('express').Router()
+const { User } = require('../models')
+
+// GET /api/users - listing all users
+router.get('/', async (req, res, next) => {
+  try {
+    const users = await User.findAll()
+    res.json(users)
+  } catch (error) {
+    next(error)
+  }
+})
+
+// POST /api/users - adding a new user (must handle requests with password field even if ignored)
+router.post('/', async (req, res, next) => {
+  try {
+    const { username, name } = req.body
+    const user = await User.create({ username, name })
+    res.json(user)
+  } catch (error) {
+    next(error)
+  }
+})
+
+// PUT /api/users/:username - changing a user's name/username
+router.put('/:username', async (req, res, next) => {
+  try {
+    const user = await User.findOne({
+      where: {
+        username: req.params.username
+      }
+    })
+
+    if (!user) {
+      return res.status(404).end()
+    }
+
+    if (req.body.name) {
+      user.name = req.body.name
+    }
+    if (req.body.username) {
+      user.username = req.body.username
+    }
+
+    await user.save()
+    res.json(user)
+  } catch (error) {
+    next(error)
+  }
+})
+
+// GET /api/users/:id - list user data for user with parameter id
+router.get('/:id', async (req, res, next) => {
+  try {
+    const user = await User.findByPk(req.params.id)
+    if (user) {
+      res.json(user)
+    } else {
+      res.status(404).end()
+    }
+  } catch (error) {
+    next(error)
+  }
+})
+
+module.exports = router
