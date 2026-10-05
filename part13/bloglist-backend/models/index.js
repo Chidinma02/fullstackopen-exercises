@@ -8,6 +8,5 @@ User.sync({ alter: true }).then(() => Blog.sync({ alter: true }))
 
 module.exports = {
   Blog,
-  Note: Blog,
   User,
 }
