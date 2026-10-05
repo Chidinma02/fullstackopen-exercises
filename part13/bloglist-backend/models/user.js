@@ -26,6 +26,10 @@ User.init(
         notEmpty: true,
       },
     },
+    disabled: {
+      type: DataTypes.BOOLEAN,
+      defaultValue: false,
+    },
   },
   {
     sequelize,
