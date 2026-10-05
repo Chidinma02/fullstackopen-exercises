@@ -1,10 +1,15 @@
 const router = require('express').Router()
-const { User } = require('../models')
+const { User, Blog } = require('../models')
 
 // GET /api/users - listing all users
 router.get('/', async (req, res, next) => {
   try {
-    const users = await User.findAll()
+    const users = await User.findAll({
+      include: {
+        model: Blog,
+        attributes: { exclude: ['userId'] }
+      }
+    })
     res.json(users)
   } catch (error) {
     next(error)
@@ -35,10 +40,10 @@ router.put('/:username', async (req, res, next) => {
       return res.status(404).end()
     }
 
-    if (req.body.name) {
+    if (req.body.name !== undefined) {
       user.name = req.body.name
     }
-    if (req.body.username) {
+    if (req.body.username !== undefined) {
       user.username = req.body.username
     }
 
@@ -52,7 +57,12 @@ router.put('/:username', async (req, res, next) => {
 // GET /api/users/:id - list user data for user with parameter id
 router.get('/:id', async (req, res, next) => {
   try {
-    const user = await User.findByPk(req.params.id)
+    const user = await User.findByPk(req.params.id, {
+      include: {
+        model: Blog,
+        attributes: { exclude: ['userId'] }
+      }
+    })
     if (user) {
       res.json(user)
     } else {

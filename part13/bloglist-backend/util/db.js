@@ -1,10 +1,15 @@
 const Sequelize = require('sequelize')
-const { DATABASE_URL } = require('./config')
+const { DATABASE_URL, TEST_DATABASE_URL, TESTING } = require('./config')
+
+const dbUrl =
+  process.env.TESTING === 'true' || TESTING === 'true'
+    ? process.env.TEST_DATABASE_URL || TEST_DATABASE_URL
+    : DATABASE_URL
 
 const isLocalhost =
-  !DATABASE_URL ||
-  DATABASE_URL.includes('localhost') ||
-  DATABASE_URL.includes('127.0.0.1')
+  !dbUrl ||
+  dbUrl.includes('localhost') ||
+  dbUrl.includes('127.0.0.1')
 
 const dialectOptions = !isLocalhost
   ? {
@@ -15,7 +20,7 @@ const dialectOptions = !isLocalhost
     }
   : {}
 
-const sequelize = new Sequelize(DATABASE_URL, {
+const sequelize = new Sequelize(dbUrl, {
   dialectOptions
 })
 
