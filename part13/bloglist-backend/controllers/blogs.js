@@ -12,7 +12,6 @@ const blogFinder = async (req, res, next) => {
   }
 }
 
-// GET /api/blogs - list all blogs
 router.get('/', async (req, res, next) => {
   try {
     let where = {}
@@ -51,7 +50,6 @@ router.get('/', async (req, res, next) => {
   }
 })
 
-// POST /api/blogs - add a new blog
 router.post('/', tokenExtractor, async (req, res, next) => {
   try {
     const user = await User.findByPk(req.decodedToken.id)
@@ -66,7 +64,6 @@ router.post('/', tokenExtractor, async (req, res, next) => {
   }
 })
 
-// GET /api/blogs/:id - find a single blog
 router.get('/:id', blogFinder, async (req, res) => {
   if (req.blog) {
     res.json(req.blog)
@@ -75,7 +72,6 @@ router.get('/:id', blogFinder, async (req, res) => {
   }
 })
 
-// DELETE /api/blogs/:id - delete a blog
 router.delete('/:id', tokenExtractor, blogFinder, async (req, res, next) => {
   try {
     if (!req.blog) {
@@ -94,7 +90,6 @@ router.delete('/:id', tokenExtractor, blogFinder, async (req, res, next) => {
   }
 })
 
-// PUT /api/blogs/:id - update a blog's likes
 router.put('/:id', blogFinder, async (req, res, next) => {
   try {
     if (!req.blog) {

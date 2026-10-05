@@ -14,7 +14,6 @@ router.post('/', async (request, response, next) => {
       },
     })
 
-    // Passwords can be ignored on login as specified in the course instructions
     if (!user) {
       return response.status(401).json({
         error: 'invalid username or password',

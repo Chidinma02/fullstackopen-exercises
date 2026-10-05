@@ -1,7 +1,6 @@
 const router = require('express').Router()
 const { User, Blog } = require('../models')
 
-// GET /api/users - listing all users
 router.get('/', async (req, res, next) => {
   try {
     const users = await User.findAll({
@@ -16,7 +15,6 @@ router.get('/', async (req, res, next) => {
   }
 })
 
-// POST /api/users - adding a new user (must handle requests with password field even if ignored)
 router.post('/', async (req, res, next) => {
   try {
     const { username, name } = req.body
@@ -27,7 +25,6 @@ router.post('/', async (req, res, next) => {
   }
 })
 
-// PUT /api/users/:username - changing a user's name/username
 router.put('/:username', async (req, res, next) => {
   try {
     const user = await User.findOne({
@@ -54,7 +51,6 @@ router.put('/:username', async (req, res, next) => {
   }
 })
 
-// GET /api/users/:id - list user data for user with parameter id
 router.get('/:id', async (req, res, next) => {
   try {
     const user = await User.findByPk(req.params.id, {
