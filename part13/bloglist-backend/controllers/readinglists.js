@@ -1,5 +1,5 @@
 const router = require('express').Router()
-const { ReadingList, User } = require('../models')
+const { ReadingList, User, Blog } = require('../models')
 const { tokenExtractor } = require('../util/middleware')
 
 router.post('/', async (req, res, next) => {
@@ -7,6 +7,23 @@ router.post('/', async (req, res, next) => {
     const { blogId, userId } = req.body
     if (!blogId || !userId) {
       return res.status(400).json({ error: 'blogId and userId are required' })
+    }
+
+    const user = await User.findByPk(userId)
+    if (!user) {
+      return res.status(404).json({ error: 'user not found' })
+    }
+
+    const blog = await Blog.findByPk(blogId)
+    if (!blog) {
+      return res.status(404).json({ error: 'blog not found' })
+    }
+
+    const existingEntry = await ReadingList.findOne({
+      where: { userId, blogId }
+    })
+    if (existingEntry) {
+      return res.status(400).json({ error: 'blog already in reading list' })
     }
 
     const readingList = await ReadingList.create({ blogId, userId })

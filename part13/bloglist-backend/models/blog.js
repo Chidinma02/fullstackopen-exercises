@@ -32,6 +32,9 @@ Blog.init(
     year: {
       type: DataTypes.INTEGER,
       validate: {
+        isInt: {
+          msg: "Year must be an integer"
+        },
         min: {
           args: [1991],
           msg: "Year must be at least 1991"

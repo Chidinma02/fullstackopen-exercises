@@ -53,6 +53,58 @@ describe('Blogs API', () => {
     assert.ok([200, 201].includes(response.status))
     assert.strictEqual(response.data.likes, 5)
   })
+
+  it('creating a blog with a valid year succeeds', async () => {
+    const newBlog = {
+      title: 'Blog with valid year',
+      author: 'Year Author',
+      url: 'https://example.com/year-blog',
+      year: 2020
+    }
+
+    const response = await axios.post(`${baseUrl}/blogs`, newBlog, {
+      headers: { Authorization: `Bearer ${testData.tokens[0]}` }
+    })
+
+    assert.ok([200, 201].includes(response.status))
+    assert.strictEqual(response.data.year, 2020)
+  })
+
+  it('creating a blog with year earlier than 1991 fails with 400', async () => {
+    const invalidBlog = {
+      title: 'Blog with ancient year',
+      author: 'Ancient Author',
+      url: 'https://example.com/ancient-blog',
+      year: 1990
+    }
+
+    try {
+      await axios.post(`${baseUrl}/blogs`, invalidBlog, {
+        headers: { Authorization: `Bearer ${testData.tokens[0]}` }
+      })
+      assert.fail('Should have thrown an error')
+    } catch (error) {
+      assert.strictEqual(error.response.status, 400)
+    }
+  })
+
+  it('creating a blog with year in the future fails with 400', async () => {
+    const invalidBlog = {
+      title: 'Blog from future',
+      author: 'Future Author',
+      url: 'https://example.com/future-blog',
+      year: new Date().getFullYear() + 1
+    }
+
+    try {
+      await axios.post(`${baseUrl}/blogs`, invalidBlog, {
+        headers: { Authorization: `Bearer ${testData.tokens[0]}` }
+      })
+      assert.fail('Should have thrown an error')
+    } catch (error) {
+      assert.strictEqual(error.response.status, 400)
+    }
+  })
 })
 
 describe('Users API', () => {
