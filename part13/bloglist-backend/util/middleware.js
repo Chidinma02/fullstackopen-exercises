@@ -21,11 +21,25 @@ const errorHandler = (error, request, response, next) => {
   return response.status(400).json({ error: [error.message] })
 }
 
-const tokenExtractor = (req, res, next) => {
+const { Session, User } = require('../models')
+
+const tokenExtractor = async (req, res, next) => {
   const authorization = req.get('authorization')
   if (authorization && authorization.toLowerCase().startsWith('bearer ')) {
     try {
-      req.decodedToken = jwt.verify(authorization.substring(7), SECRET)
+      const token = authorization.substring(7)
+      req.decodedToken = jwt.verify(token, SECRET)
+
+      const session = await Session.findOne({ where: { token } })
+      if (!session) {
+        return res.status(401).json({ error: 'session expired or invalid' })
+      }
+
+      const user = await User.findByPk(req.decodedToken.id)
+      if (!user || user.disabled) {
+        return res.status(401).json({ error: 'account disabled, please contact admin' })
+      }
+
     } catch {
       return res.status(401).json({ error: 'token invalid' })
     }
