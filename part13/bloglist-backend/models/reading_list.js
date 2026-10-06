@@ -1,7 +1,14 @@
 const { Model, DataTypes } = require('sequelize')
 const { sequelize } = require('../util/db')
 
-class ReadingList extends Model {}
+class ReadingList extends Model {
+  toJSON() {
+    const values = { ...this.get() }
+    if (values.userId !== undefined) values.user_id = values.userId
+    if (values.blogId !== undefined) values.blog_id = values.blogId
+    return values
+  }
+}
 
 ReadingList.init(
   {
