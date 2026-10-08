@@ -40,12 +40,20 @@ export const loginUser = async (
   username: string,
   password: string,
 ) => {
+  await page.goto("/")
+  const logoutButton = page.getByRole("button", { name: /logout/i })
+  if (await logoutButton.isVisible()) {
+    await logoutButton.click()
+    await page.waitForURL("/")
+  }
+
   await page.goto("/login")
   await page.getByLabel("Username", { exact: true }).fill(username)
   await page.getByLabel("Password", { exact: true }).fill(password)
-  await page.getByRole("button", { name: "Login" }).click()
-  // Wait for navigation or notification
-  await page.waitForURL("/")
+  await Promise.all([
+    page.waitForURL("/"),
+    page.getByRole("button", { name: "Login" }).click(),
+  ])
 }
 
 export const createBlog = async (
