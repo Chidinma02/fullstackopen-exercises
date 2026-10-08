@@ -82,7 +82,11 @@ jobs:
         run: |
           echo "### Database Migration Log" >> $GITHUB_STEP_SUMMARY
           echo '```' >> $GITHUB_STEP_SUMMARY
-          cat migration.log >> $GITHUB_STEP_SUMMARY
+          if [ -f migration.log ]; then
+            cat migration.log >> $GITHUB_STEP_SUMMARY
+          else
+            echo "No migration log generated." >> $GITHUB_STEP_SUMMARY
+          fi
           echo '```' >> $GITHUB_STEP_SUMMARY
 
       - name: Run Playwright tests
