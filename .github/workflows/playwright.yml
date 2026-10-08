@@ -8,7 +8,7 @@ on:
 
 jobs:
   test:
-    timeout-minutes: 60
+    timeout-minutes: 15
     runs-on: ubuntu-latest
 
     defaults:
@@ -18,27 +18,44 @@ jobs:
     env:
       NODE_ENV: test
       DATABASE_URL: ${{ secrets.DATABASE_URL }}
-      NEXTAUTH_SECRET: ${{ secrets.NEXTAUTH_SECRET }}
-      NEXTAUTH_URL: ${{ secrets.NEXTAUTH_URL }}
+      NEXTAUTH_SECRET: ${{ secrets.NEXTAUTH_SECRET || 'super-secret-key-for-fullstackopen' }}
+      NEXTAUTH_URL: ${{ secrets.NEXTAUTH_URL || 'http://localhost:3000' }}
 
     steps:
       - uses: actions/checkout@v4
 
-      - uses: actions/setup-node@v4
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
         with:
-          node-version: lts/*
+          node-version: '22'
+          cache: 'npm'
+          cache-dependency-path: part14/bloglist/package-lock.json
 
       - name: Install dependencies
         run: npm ci
 
+      - name: Cache Playwright browsers
+        uses: actions/cache@v4
+        id: playwright-cache
+        with:
+          path: ~/.cache/ms-playwright
+          key: playwright-${{ runner.os }}-${{ hashFiles('part14/bloglist/package-lock.json') }}
+
       - name: Install Playwright Browsers
+        if: steps.playwright-cache.outputs.cache-hit != 'true'
+        timeout-minutes: 5
         run: npx playwright install --with-deps chromium
+
+      - name: Install Playwright OS dependencies only
+        if: steps.playwright-cache.outputs.cache-hit == 'true'
+        timeout-minutes: 5
+        run: npx playwright install-deps chromium
 
       - name: Set up environment file
         run: |
           echo "DATABASE_URL=${{ secrets.DATABASE_URL }}" > .env.test
-          echo "NEXTAUTH_SECRET=${{ secrets.NEXTAUTH_SECRET }}" >> .env.test
-          echo "NEXTAUTH_URL=${{ secrets.NEXTAUTH_URL }}" >> .env.test
+          echo "NEXTAUTH_SECRET=${{ secrets.NEXTAUTH_SECRET || 'super-secret-key-for-fullstackopen' }}" >> .env.test
+          echo "NEXTAUTH_URL=${{ secrets.NEXTAUTH_URL || 'http://localhost:3000' }}" >> .env.test
           echo "NODE_ENV=test" >> .env.test
 
       - name: Verify environment setup
@@ -50,6 +67,8 @@ jobs:
           if [ -z "${{ secrets.DATABASE_URL }}" ]; then
             echo "❌ **ERROR**: \`DATABASE_URL\` secret is missing in GitHub repository secrets!" >> $GITHUB_STEP_SUMMARY
             echo "Please go to repository Settings -> Secrets and variables -> Actions and add DATABASE_URL." >> $GITHUB_STEP_SUMMARY
+            echo "::error::DATABASE_URL secret is missing in GitHub repository secrets! Please add it under Settings -> Secrets and variables -> Actions."
+            exit 1
           else
             echo "✅ \`DATABASE_URL\` is present." >> $GITHUB_STEP_SUMMARY
           fi
