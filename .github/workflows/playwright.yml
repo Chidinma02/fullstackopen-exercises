@@ -11,13 +11,28 @@ jobs:
     timeout-minutes: 15
     runs-on: ubuntu-latest
 
+    services:
+      postgres:
+        image: postgres:17
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: test_db
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 5432:5432
+
     defaults:
       run:
         working-directory: part14/bloglist
 
     env:
       NODE_ENV: test
-      DATABASE_URL: ${{ secrets.DATABASE_URL }}
+      DATABASE_URL: ${{ secrets.DATABASE_URL || 'postgresql://postgres:postgres@localhost:5432/test_db?sslmode=disable' }}
       NEXTAUTH_SECRET: ${{ secrets.NEXTAUTH_SECRET || 'super-secret-key-for-fullstackopen' }}
       NEXTAUTH_URL: ${{ secrets.NEXTAUTH_URL || 'http://localhost:3000' }}
 
@@ -53,25 +68,21 @@ jobs:
 
       - name: Set up environment file
         run: |
-          echo "DATABASE_URL=${{ secrets.DATABASE_URL }}" > .env.test
-          echo "NEXTAUTH_SECRET=${{ secrets.NEXTAUTH_SECRET || 'super-secret-key-for-fullstackopen' }}" >> .env.test
-          echo "NEXTAUTH_URL=${{ secrets.NEXTAUTH_URL || 'http://localhost:3000' }}" >> .env.test
+          echo "DATABASE_URL=${DATABASE_URL}" > .env.test
+          echo "NEXTAUTH_SECRET=${NEXTAUTH_SECRET}" >> .env.test
+          echo "NEXTAUTH_URL=${NEXTAUTH_URL}" >> .env.test
           echo "NODE_ENV=test" >> .env.test
 
       - name: Verify environment setup
         run: |
           echo "### Environment Verification" >> $GITHUB_STEP_SUMMARY
-          echo "- DATABASE_URL secret exists: ${{ secrets.DATABASE_URL != '' }}" >> $GITHUB_STEP_SUMMARY
-          echo "- NEXTAUTH_SECRET secret exists: ${{ secrets.NEXTAUTH_SECRET != '' }}" >> $GITHUB_STEP_SUMMARY
-          echo "- NEXTAUTH_URL secret exists: ${{ secrets.NEXTAUTH_URL != '' }}" >> $GITHUB_STEP_SUMMARY
-          if [ -z "${{ secrets.DATABASE_URL }}" ]; then
-            echo "❌ **ERROR**: \`DATABASE_URL\` secret is missing in GitHub repository secrets!" >> $GITHUB_STEP_SUMMARY
-            echo "Please go to repository Settings -> Secrets and variables -> Actions and add DATABASE_URL." >> $GITHUB_STEP_SUMMARY
-            echo "::error::DATABASE_URL secret is missing in GitHub repository secrets! Please add it under Settings -> Secrets and variables -> Actions."
-            exit 1
+          if [ -n "${{ secrets.DATABASE_URL }}" ]; then
+            echo "✅ Using custom \`DATABASE_URL\` from repository secrets." >> $GITHUB_STEP_SUMMARY
           else
-            echo "✅ \`DATABASE_URL\` is present." >> $GITHUB_STEP_SUMMARY
+            echo "ℹ️ \`DATABASE_URL\` secret not provided; using built-in PostgreSQL test service container." >> $GITHUB_STEP_SUMMARY
           fi
+          echo "- NEXTAUTH_SECRET configured: true" >> $GITHUB_STEP_SUMMARY
+          echo "- NEXTAUTH_URL: ${NEXTAUTH_URL}" >> $GITHUB_STEP_SUMMARY
 
       - name: Run database migrations
         run: |
