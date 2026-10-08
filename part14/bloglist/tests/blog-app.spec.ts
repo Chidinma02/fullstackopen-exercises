@@ -153,7 +153,9 @@ test.describe("Blog Application", () => {
       await page.goto("/")
 
       // Click on blogs link in navbar
-      const blogsLink = page.getByRole("link", { name: "blogs", exact: true })
+      const blogsLink = page
+        .getByRole("navigation")
+        .getByRole("link", { name: "blogs", exact: true })
       await blogsLink.click()
 
       await expect(page).toHaveURL("/blogs")
