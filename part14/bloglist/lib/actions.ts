@@ -83,6 +83,7 @@ export async function createBlogAction(
   cookieStore.set("notification", `A new blog '${newBlog.title}' by ${newBlog.author} added`, {
     path: "/",
     maxAge: 10,
+    httpOnly: false,
   });
 
   revalidatePath("/blogs");
